@@ -1,3 +1,6 @@
+# Caveat:
+This is only an experimental project, that lets me learn how i'm supposed to play with tanstack table. It's a training that allows me to see how to deal with server side pagination and how i'm supposed to create a re-usable table so i can use it in other projects.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
