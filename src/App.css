@@ -1,5 +1,7 @@
 .App {
-  text-align: center;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .App-logo {
@@ -26,6 +28,71 @@
 
 .App-link {
   color: #61dafb;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: white;
+  border-radius: 8px;
+  border-spacing: 0;
+}
+
+th {
+  transition: background-color 0.2s;
+  position: relative;
+  font-weight: bold;
+}
+
+th:hover {
+  background: #e9e9e9;
+}
+
+tr:hover td {
+  background: #f8f8f8;
+}
+
+th,
+td {
+  margin: 0;
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  position: relative;
+}
+
+th:last-child,
+td:last-child {
+  border-right: none;
+}
+
+.resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 5px;
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+  transition: background-color 0.2s;
+}
+
+.resizer:hover {
+  background: #2aaae2;
+}
+
+input::placeholder {
+  color: #999;
 }
 
 @keyframes App-logo-spin {
