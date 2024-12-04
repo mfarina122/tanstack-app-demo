@@ -1,13 +1,23 @@
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import './Navigation.css';
 
-function Navigation() {
+const Navigation = () => {
   return (
     <nav className="navigation">
-      <Link to="/comments">Commenti</Link>
-      <Link to="/posts">Posts</Link>
+      <NavLink to="/comments" className={({ isActive }) => isActive ? 'active' : ''}>
+        Comments
+      </NavLink>
+      <NavLink to="/posts" className={({ isActive }) => isActive ? 'active' : ''}>
+        Posts
+      </NavLink>
+      <NavLink to="/users" className={({ isActive }) => isActive ? 'active' : ''}>
+        Users
+      </NavLink>
+      <NavLink to="/people" className={({ isActive }) => isActive ? 'active' : ''}>
+        People
+      </NavLink>
     </nav>
   );
-}
+};
 
 export default Navigation;

@@ -1,33 +1,36 @@
-import { useState, useEffect, useCallback } from 'react';
-import Table from '../components/Table';
+import { useState, useCallback, useEffect } from 'react';
+import Table from '../components/Table/Table';
 
-function PostsPage() {
+const UsersPage = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pageCount, setPageCount] = useState(1);
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [currentFilters, setCurrentFilters] = useState({});
 
   const columns = [
     {
-      header: 'ID',
-      accessorKey: 'id',
-      size: 100,
+      accessorKey: 'name',
+      header: 'Nome',
     },
     {
-      header: 'Titolo',
-      accessorKey: 'title',
-      size: 300,
+      accessorKey: 'username',
+      header: 'Username',
     },
     {
-      header: 'Contenuto',
-      accessorKey: 'body',
-      size: 500,
+      accessorKey: 'email',
+      header: 'Email',
     },
     {
-      header: 'Utente ID',
-      accessorKey: 'userId',
-      size: 100,
+      accessorKey: 'phone',
+      header: 'Telefono',
+    },
+    {
+      accessorKey: 'website',
+      header: 'Sito Web',
+    },
+    {
+      accessorKey: 'company.name',
+      header: 'Azienda',
     }
   ];
 
@@ -50,7 +53,7 @@ function PostsPage() {
 
       // Prima otteniamo il conteggio totale con gli stessi filtri
       const totalCountResponse = await fetch(
-        `https://jsonplaceholder.typicode.com/posts?${queryParams.toString()}`
+        `https://jsonplaceholder.typicode.com/users?${queryParams.toString()}`
       );
       const totalData = await totalCountResponse.json();
       const totalCount = totalData.length;
@@ -63,7 +66,7 @@ function PostsPage() {
 
       // Fetch dei dati paginati con gli stessi filtri
       const response = await fetch(
-        `https://jsonplaceholder.typicode.com/posts?${queryParams.toString()}`
+        `https://jsonplaceholder.typicode.com/users?${queryParams.toString()}`
       );
       const jsonData = await response.json();
       setData(jsonData);
@@ -77,30 +80,28 @@ function PostsPage() {
   }, []);
 
   const handlePaginationChange = useCallback((newPagination, filters) => {
-    setCurrentFilters(filters); // Salviamo i filtri correnti
+    setCurrentFilters(filters);
     fetchData(newPagination, filters);
   }, [fetchData]);
 
-  // Initial data fetch
   useEffect(() => {
     fetchData({ pageIndex: 0, pageSize: 10 }, {});
   }, [fetchData]);
 
   return (
-    <div className="page">
-      <h1>Posts</h1>
-      
+    <div className="page-container">
+      <h1>Utenti</h1>
       <Table
         data={data}
         columns={columns}
         pageCount={pageCount}
-        isLoading={loading}
         onPaginationChange={handlePaginationChange}
+        isLoading={loading}
         initialPageSize={10}
         pageSizeOptions={[10, 20, 30, 40, 50]}
       />
     </div>
   );
-}
+};
 
-export default PostsPage;
+export default UsersPage;

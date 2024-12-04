@@ -1,11 +1,15 @@
 .table-wrapper {
   width: 100%;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .table-container {
   width: 100%;
   overflow-x: auto;
   margin-bottom: 1rem;
+  border-radius: 8px;
 }
 
 .table-loading {
@@ -16,41 +20,63 @@
 }
 
 table {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  background: white;
-  border-radius: 8px;
-  border-spacing: 0;
   width: 100%;
+  border-spacing: 0;
+  border-collapse: separate;
+  border-radius: 8px;
 }
 
 th {
   position: relative;
-  font-weight: bold;
-  padding: 12px;
-  background: #f4f4f4;
+  padding: 0;
+  background: #f8f9fa;
   text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid #e9ecef;
+}
+
+th:first-child {
+  border-top-left-radius: 8px;
+}
+
+th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.th-content {
+  position: relative;
+  padding: 14px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+}
+
+.header-text {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+.th-filter {
+  padding: 8px 12px;
+  background: #fff;
+  border-top: 1px solid #e9ecef;
 }
 
 td {
   padding: 12px;
   text-align: left;
+  border-bottom: 1px solid #e9ecef;
+  color: #495057;
+}
+
+tr:last-child td {
+  border-bottom: none;
 }
 
 tr:hover td {
-  background: #f8f8f8;
-}
-
-th,
-td {
-  margin: 0;
-  border-bottom: 1px solid #ddd;
-  border-right: 1px solid #ddd;
-  position: relative;
-}
-
-th:last-child,
-td:last-child {
-  border-right: none;
+  background: #f8f9fa;
 }
 
 .resizer {
@@ -58,48 +84,175 @@ td:last-child {
   right: 0;
   top: 0;
   height: 100%;
-  width: 5px;
+  width: 4px;
+  background: #e9ecef;
   cursor: col-resize;
   user-select: none;
   touch-action: none;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
+/* Mostra sempre un bordo sottile per indicare la possibilità di resize */
+th:not(:last-child) .resizer::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 1px;
+  background: #dee2e6;
+}
+
+/* Effetto hover sul resize handle */
 .resizer:hover {
   background: #2aaae2;
+  width: 6px;
+}
+
+/* Effetto quando si sta facendo il resize */
+.resizer:active {
+  background: #2aaae2;
+  opacity: 1;
+  width: 6px;
+}
+
+/* Evidenzia la colonna durante il resize */
+th:has(.resizer:active) {
+  background: #f8f9fa;
+}
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.filter-item {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-group {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.filter-input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  background: white;
+}
+
+.filter-input:focus {
+  outline: none;
+  border-color: #2aaae2;
+  box-shadow: 0 0 0 3px rgba(42, 170, 226, 0.15);
+}
+
+.search-button {
+  padding: 6px 10px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-button:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.search-button:active {
+  background: #e9ecef;
 }
 
 .pagination {
   display: flex;
-  gap: 1rem;
   align-items: center;
-  justify-content: center;
-  margin-top: 1rem;
+  justify-content: space-between;
   padding: 1rem;
+  background: #f8f9fa;
+  border-top: 1px solid #dee2e6;
 }
 
-.pagination button {
-  padding: 0.5rem 1rem;
-  border: 1px solid #ddd;
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination-controls button {
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
   background: white;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.pagination button:hover:not(:disabled) {
-  background: #f4f4f4;
+.pagination-controls button:hover:not(:disabled) {
+  background: #f8f9fa;
+  border-color: #adb5bd;
 }
 
-.pagination button:disabled {
-  background: #f4f4f4;
-  cursor: not-allowed;
+.pagination-controls button:disabled {
   opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.pagination select {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
+.page-input-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.page-input {
+  width: 50px;
+  padding: 4px 8px;
+  border: 1px solid #dee2e6;
   border-radius: 4px;
-  margin-left: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.page-input:focus {
+  outline: none;
+  border-color: #2aaae2;
+  box-shadow: 0 0 0 3px rgba(42, 170, 226, 0.15);
+}
+
+/* Rimuovi le frecce dall'input number */
+.page-input::-webkit-inner-spin-button,
+.page-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.page-input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.page-size-select {
+  padding: 6px 8px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+}
+
+.page-size-select:focus {
+  outline: none;
+  border-color: #2aaae2;
+  box-shadow: 0 0 0 3px rgba(42, 170, 226, 0.15);
 }

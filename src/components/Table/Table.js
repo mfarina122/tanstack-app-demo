@@ -14,6 +14,7 @@ const Table = ({
   isLoading,
   manualPagination = true,
   onPaginationChange,
+  onFiltersChange,
   initialPageSize = 10,
   pageSizeOptions = [10, 20, 30, 40, 50],
 }) => {
@@ -22,27 +23,38 @@ const Table = ({
     pageIndex: 0,
     pageSize: initialPageSize,
   });
+  const [filters, setFilters] = useState({});
 
-  // Reset to first page when pageCount changes
+  // Reset page quando cambia il numero totale di pagine
   useEffect(() => {
     if (pagination.pageIndex >= controlledPageCount) {
       const newPagination = {
+        ...pagination,
         pageIndex: Math.max(0, controlledPageCount - 1),
-        pageSize: pagination.pageSize,
       };
       setPagination(newPagination);
-      onPaginationChange?.(newPagination);
+      onPaginationChange?.(newPagination, filters);
     }
-  }, [controlledPageCount, pagination.pageIndex, pagination.pageSize, onPaginationChange]);
+  }, [controlledPageCount, pagination.pageIndex, pagination.pageSize, onPaginationChange, filters]);
 
   const handlePaginationChange = (updater) => {
-    // Handle both function updater and direct value
-    const newPagination = typeof updater === 'function' 
-      ? updater(pagination)
-      : updater;
-
+    const newPagination = typeof updater === 'function' ? updater(pagination) : updater;
     setPagination(newPagination);
-    onPaginationChange?.(newPagination);
+    onPaginationChange?.(newPagination, filters);
+  };
+
+  const handleSearch = () => {
+    // Reset to first page and trigger search
+    const newPagination = { ...pagination, pageIndex: 0 };
+    setPagination(newPagination);
+    onPaginationChange?.(newPagination, filters);
+    onFiltersChange?.(filters);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
   };
 
   const table = useReactTable({
@@ -60,25 +72,6 @@ const Table = ({
     onColumnResizingChange: setColumnResizing,
     columnResizeMode: 'onChange',
   });
-
-  const currentPageIndex = pagination.pageIndex;
-  const currentPageCount = Math.max(controlledPageCount, 1);
-
-  const goToPage = (pageIndex) => {
-    const newPagination = {
-      ...pagination,
-      pageIndex: Math.min(Math.max(0, pageIndex), currentPageCount - 1),
-    };
-    handlePaginationChange(newPagination);
-  };
-
-  const changePageSize = (newPageSize) => {
-    const newPagination = {
-      pageIndex: 0, // Reset to first page when changing page size
-      pageSize: newPageSize,
-    };
-    handlePaginationChange(newPagination);
-  };
 
   return (
     <div className="table-wrapper">
@@ -98,12 +91,39 @@ const Table = ({
                           width: header.getSize(),
                         }}
                       >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        <div
-                          onMouseDown={header.getResizeHandler()}
-                          onTouchStart={header.getResizeHandler()}
-                          className="resizer"
-                        />
+                        <div className="th-content">
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          <div
+                            onMouseDown={header.getResizeHandler()}
+                            onTouchStart={header.getResizeHandler()}
+                            className="resizer"
+                          />
+                        </div>
+                        <div className="th-filter">
+                          <div className="filter-group">
+                            <input
+                              type="text"
+                              placeholder={`Filtra ${header.column.columnDef.header}`}
+                              value={filters[header.column.columnDef.accessorKey] || ''}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                setFilters(prev => ({
+                                  ...prev,
+                                  [header.column.columnDef.accessorKey]: value || undefined
+                                }));
+                              }}
+                              onKeyPress={handleKeyPress}
+                              className="filter-input"
+                            />
+                            <button 
+                              className="search-button"
+                              onClick={handleSearch}
+                              title="Cerca"
+                            >
+                              🔍
+                            </button>
+                          </div>
+                        </div>
                       </th>
                     ))}
                   </tr>
@@ -113,12 +133,7 @@ const Table = ({
                 {table.getRowModel().rows.map(row => (
                   <tr key={row.id}>
                     {row.getVisibleCells().map(cell => (
-                      <td
-                        key={cell.id}
-                        style={{
-                          width: cell.column.getSize(),
-                        }}
-                      >
+                      <td key={cell.id}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
@@ -134,41 +149,60 @@ const Table = ({
               </tbody>
             </table>
           </div>
-
           <div className="pagination">
-            <button
-              onClick={() => goToPage(0)}
-              disabled={currentPageIndex === 0}
-            >
-              {'<<'}
-            </button>
-            <button
-              onClick={() => goToPage(currentPageIndex - 1)}
-              disabled={currentPageIndex === 0}
-            >
-              {'<'}
-            </button>
-            <span>
-              Pagina{' '}
-              <strong>
-                {currentPageIndex + 1} di {currentPageCount}
-              </strong>
-            </span>
-            <button
-              onClick={() => goToPage(currentPageIndex + 1)}
-              disabled={currentPageIndex >= currentPageCount - 1}
-            >
-              {'>'}
-            </button>
-            <button
-              onClick={() => goToPage(currentPageCount - 1)}
-              disabled={currentPageIndex >= currentPageCount - 1}
-            >
-              {'>>'}
-            </button>
+            <div className="pagination-controls">
+              <button
+                onClick={() => handlePaginationChange(old => ({ ...old, pageIndex: 0 }))}
+                disabled={!table.getCanPreviousPage()}
+              >
+                {'<<'}
+              </button>
+              <button
+                onClick={() => handlePaginationChange(old => ({ ...old, pageIndex: old.pageIndex - 1 }))}
+                disabled={!table.getCanPreviousPage()}
+              >
+                {'<'}
+              </button>
+              <span className="page-input-group">
+                Pagina{' '}
+                <input
+                  type="number"
+                  min={1}
+                  max={controlledPageCount}
+                  value={pagination.pageIndex + 1}
+                  onChange={e => {
+                    const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                    handlePaginationChange(old => ({
+                      ...old,
+                      pageIndex: Math.min(Math.max(0, page), controlledPageCount - 1),
+                    }));
+                  }}
+                  className="page-input"
+                />
+                {' '}di {controlledPageCount}
+              </span>
+              <button
+                onClick={() => handlePaginationChange(old => ({ ...old, pageIndex: old.pageIndex + 1 }))}
+                disabled={!table.getCanNextPage()}
+              >
+                {'>'}
+              </button>
+              <button
+                onClick={() => handlePaginationChange(old => ({ ...old, pageIndex: controlledPageCount - 1 }))}
+                disabled={!table.getCanNextPage()}
+              >
+                {'>>'}
+              </button>
+            </div>
             <select
               value={pagination.pageSize}
-              onChange={e => changePageSize(Number(e.target.value))}
+              onChange={e => {
+                handlePaginationChange(old => ({
+                  ...old,
+                  pageSize: Number(e.target.value),
+                }));
+              }}
+              className="page-size-select"
             >
               {pageSizeOptions.map(pageSize => (
                 <option key={pageSize} value={pageSize}>
