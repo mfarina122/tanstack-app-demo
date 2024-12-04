@@ -11,26 +11,38 @@ const UsersPage = () => {
     {
       accessorKey: 'name',
       header: 'Nome',
+      size: 200,
+      enableResizing: true,
     },
     {
       accessorKey: 'username',
       header: 'Username',
+      size: 150,
+      enableResizing: true,
     },
     {
       accessorKey: 'email',
       header: 'Email',
+      size: 250,
+      enableResizing: true,
     },
     {
       accessorKey: 'phone',
       header: 'Telefono',
+      size: 200,
+      enableResizing: true,
     },
     {
       accessorKey: 'website',
       header: 'Sito Web',
+      size: 200,
+      enableResizing: true,
     },
     {
       accessorKey: 'company.name',
       header: 'Azienda',
+      size: 250,
+      enableResizing: true,
     }
   ];
 
@@ -99,6 +111,7 @@ const UsersPage = () => {
         isLoading={loading}
         initialPageSize={10}
         pageSizeOptions={[10, 20, 30, 40, 50]}
+        enableColumnResizing={true}
       />
     </div>
   );

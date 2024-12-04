@@ -11,18 +11,22 @@ const PeoplePage = () => {
     {
       accessorKey: 'first_name',
       header: 'Nome',
+      size: 200,
     },
     {
       accessorKey: 'last_name',
       header: 'Cognome',
+      size: 200,
     },
     {
       accessorKey: 'email',
       header: 'Email',
+      size: 250,
     },
     {
       accessorFn: (row) => `${row.first_name} ${row.last_name}`,
       header: 'Nome Completo',
+      size: 250,
     }
   ];
 
@@ -86,8 +90,9 @@ const PeoplePage = () => {
         pageCount={pageCount}
         onPaginationChange={handlePaginationChange}
         isLoading={loading}
-        initialPageSize={6}
-        pageSizeOptions={[6, 12, 18, 24, 30]}
+        initialPageSize={10}
+        pageSizeOptions={[10, 20, 30, 40, 50]}
+        enableColumnResizing={true}
       />
     </div>
   );
